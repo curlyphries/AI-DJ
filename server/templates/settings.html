@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI DJ Settings</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .settings-container {
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .card {
+            background-color: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #3a3a3a;
+            border-bottom: 1px solid #4a4a4a;
+        }
+        .form-control, .form-select {
+            background-color: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            color: #ffffff;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #2a2a2a;
+            color: #ffffff;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+        }
+        .api-key-item {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #007bff;
+            transition: all 0.2s ease;
+        }
+        .api-key-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .profile-card {
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #3a3a3a;
+            transition: all 0.3s ease;
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .profile-card.active {
+            border-left: 4px solid #28a745;
+        }
+        .voice-card {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .voice-card:hover {
+            transform: scale(1.03);
+        }
+        .voice-card.selected {
+            border: 2px solid #28a745;
+        }
+        .voice-card .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .voice-card audio {
+            margin-top: auto;
+        }
+        .personality-card {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            height: 100%;
+        }
+        .personality-card:hover {
+            transform: scale(1.03);
+        }
+        .personality-card.selected {
+            border: 2px solid #28a745;
+        }
+        .tab-content {
+            padding-top: 20px;
+        }
+        .api-key-masked {
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+        .btn-reveal {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-reveal:hover {
+            color: #007bff;
+        }
+        .nav-tabs .nav-link {
+            color: #adb5bd;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        .nav-tabs .nav-link:hover {
+            color: #ffffff;
+            border-bottom-color: rgba(255, 255, 255, 0.3);
+        }
+        .nav-tabs .nav-link.active {
+            color: #ffffff;
+            background-color: transparent;
+            border-bottom-color: #007bff;
+        }
+        .onboarding-step {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+        }
+        .onboarding-step:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background-color: #007bff;
+            border-radius: 50%;
+        }
+        .onboarding-step:after {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 20px;
+            width: 2px;
+            height: calc(100% - 10px);
+            background-color: #007bff;
+        }
+        .onboarding-step:last-child:after {
+            display: none;
+        }
+        .welcome-card {
+            text-align: center;
+            padding: 30px;
+        }
+        .welcome-card i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        @media (max-width: 768px) {
+            .settings-container {
+                padding: 15px;
+            }
+            .nav-tabs .nav-link {
+                padding: 0.5rem 0.5rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-dark text-light">
+    <div class="container">
+        <header class="d-flex justify-content-between align-items-center py-3 mb-4 border-bottom border-secondary">
+            <h1><i class="fas fa-robot me-2"></i> AI DJ Settings</h1>
+            <div>
+                <a href="/" class="btn btn-outline-light me-2">
+                    <i class="fas fa-home me-2"></i> Home
+                </a>
+                <button id="export-settings-btn" class="btn btn-outline-info me-2">
+                    <i class="fas fa-download me-2"></i> Export
+                </button>
+                <button id="import-settings-btn" class="btn btn-outline-warning">
+                    <i class="fas fa-upload me-2"></i> Import
+                </button>
+            </div>
+        </header>
+
+        <div id="alert-container"></div>
+
+        <!-- Welcome Message for First-Time Users -->
+        <div id="welcome-container" style="display: none;">
+            <div class="settings-container">
+                <div class="card welcome-card">
+                    <i class="fas fa-music"></i>
+                    <h2>Welcome to AI DJ Settings!</h2>
+                    <p class="lead">Let's set up your personalized DJ experience in a few simple steps.</p>
+                    
+                    <div class="mt-4 text-start">
+                        <div class="onboarding-step">
+                            <h4>Step 1: Add Your API Keys</h4>
+                            <p>Start by adding your API keys for OpenAI and ElevenLabs to enable the AI and voice features.</p>
+                        </div>
+                        <div class="onboarding-step">
+                            <h4>Step 2: Create a DJ Profile</h4>
+                            <p>Choose a voice and personality for your DJ to customize your listening experience.</p>
+                        </div>
+                        <div class="onboarding-step">
+                            <h4>Step 3: Start the Music!</h4>
+                            <p>Return to the main page and start interacting with your personalized AI DJ.</p>
+                        </div>
+                    </div>
+                    
+                    <button id="get-started-btn" class="btn btn-primary btn-lg mt-4">
+                        <i class="fas fa-play me-2"></i> Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Navigation -->
+        <ul class="nav nav-tabs" id="settingsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="api-keys-tab" data-bs-toggle="tab" data-bs-target="#api-keys" type="button" role="tab" aria-controls="api-keys" aria-selected="true">
+                    <i class="fas fa-key me-2"></i> API Keys
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="dj-profiles-tab" data-bs-toggle="tab" data-bs-target="#dj-profiles" type="button" role="tab" aria-controls="dj-profiles" aria-selected="false">
+                    <i class="fas fa-user-circle me-2"></i> DJ Profiles
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="create-profile-tab" data-bs-toggle="tab" data-bs-target="#create-profile" type="button" role="tab" aria-controls="create-profile" aria-selected="false">
+                    <i class="fas fa-plus-circle me-2"></i> Create DJ Profile
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="preferences-tab" data-bs-toggle="tab" data-bs-target="#preferences" type="button" role="tab" aria-controls="preferences" aria-selected="false">
+                    <i class="fas fa-cog me-2"></i> Preferences
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="settingsTabContent">
+            <!-- API Keys Tab -->
+            <div class="tab-pane fade show active" id="api-keys" role="tabpanel" aria-labelledby="api-keys-tab">
+                <div class="settings-container">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h3>Manage API Keys</h3>
+                            <p class="text-muted">Your API keys are stored locally and never shared with external services.</p>
+                        </div>
+                    </div>
+
+                    <!-- API Key Form -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Add/Update API Key</h4>
+                        </div>
+                        <div class="card-body">
+                            <form id="api-key-form">
+                                <div class="mb-3">
+                                    <label for="service-select" class="form-label">Service</label>
+                                    <select class="form-select" id="service-select" required>
+                                        <option value="" selected disabled>Select a service</option>
+                                        <option value="openai">OpenAI</option>
+                                        <option value="elevenlabs">ElevenLabs</option>
+                                        <option value="lastfm">Last.fm</option>
+                                        <option value="spotify">Spotify</option>
+                                        <option value="navidrome">Navidrome</option>
+                                    </select>
+                                    <div class="form-text text-light mt-1">
+                                        <span id="service-help-text"></span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="api-key-input" class="form-label">API Key</label>
+                                    <input type="password" class="form-control" id="api-key-input" placeholder="Enter your API key" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i> Save API Key
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Saved API Keys -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4>Your API Keys</h4>
+                            <button id="refresh-keys-btn" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-sync-alt me-2"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="api-keys-list">
+                                <div class="text-center">
+                                    <i class="fas fa-spinner fa-spin me-2"></i> Loading API keys...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DJ Profiles Tab -->
+            <div class="tab-pane fade" id="dj-profiles" role="tabpanel" aria-labelledby="dj-profiles-tab">
+                <div class="settings-container">
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <h3>Your DJ Profiles</h3>
+                            <p class="text-muted">Manage your custom DJ personalities and voices.</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <button class="btn btn-primary" onclick="document.getElementById('create-profile-tab').click()">
+                                <i class="fas fa-plus-circle me-2"></i> Create New Profile
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="dj-profiles-list" class="row">
+                        <div class="col-12 text-center">
+                            <i class="fas fa-spinner fa-spin me-2"></i> Loading DJ profiles...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create DJ Profile Tab -->
+            <div class="tab-pane fade" id="create-profile" role="tabpanel" aria-labelledby="create-profile-tab">
+                <div class="settings-container">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h3>Create New DJ Profile</h3>
+                            <p class="text-muted">Customize your DJ's voice and personality.</p>
+                        </div>
+                    </div>
+
+                    <form id="create-profile-form">
+                        <div class="mb-4">
+                            <label for="profile-name" class="form-label">Profile Name</label>
+                            <input type="text" class="form-control" id="profile-name" placeholder="Enter a name for this DJ profile" required>
+                        </div>
+
+                        <!-- Voice Selection -->
+                        <div class="mb-4">
+                            <h4>Select a Voice</h4>
+                            <p class="text-muted">Choose a voice for your DJ. Click on a card to select and hear a preview.</p>
+                            <div id="voices-container" class="row">
+                                <div class="col-12 text-center">
+                                    <i class="fas fa-spinner fa-spin me-2"></i> Loading voices...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personality Selection -->
+                        <div class="mb-4">
+                            <h4>Select a Personality</h4>
+                            <p class="text-muted">Choose a personality template or create your own custom personality.</p>
+                            <div id="personalities-container" class="row">
+                                <div class="col-12 text-center">
+                                    <i class="fas fa-spinner fa-spin me-2"></i> Loading personalities...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Custom Personality -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="custom-personality-check">
+                                <label class="form-check-label" for="custom-personality-check">
+                                    Create custom personality
+                                </label>
+                            </div>
+                            <div id="custom-personality-container" class="mt-3" style="display: none;">
+                                <label for="custom-personality-input" class="form-label">Custom Personality Description</label>
+                                <textarea class="form-control" id="custom-personality-input" rows="4" placeholder="Describe your DJ's personality, style, and tone..."></textarea>
+                                <div class="form-text text-light mt-1">
+                                    Example: "You are a laid-back DJ with a smooth voice who loves jazz and soul music. Your commentary is thoughtful and includes interesting historical facts about the songs you play."
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('dj-profiles-tab').click()">
+                                <i class="fas fa-arrow-left me-2"></i> Back to Profiles
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i> Create DJ Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Preferences Tab -->
+            <div class="tab-pane fade" id="preferences" role="tabpanel" aria-labelledby="preferences-tab">
+                <div class="settings-container">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h3>User Preferences</h3>
+                            <p class="text-muted">Customize your AI DJ experience.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Appearance</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Theme</label>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-dark active" id="theme-dark-btn">Dark</button>
+                                    <button class="btn btn-light" id="theme-light-btn">Light</button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="font-size-range" class="form-label">Font Size</label>
+                                <input type="range" class="form-range" min="12" max="20" step="1" id="font-size-range">
+                                <div class="d-flex justify-content-between">
+                                    <span>Small</span>
+                                    <span>Large</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Interaction</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="auto-play-audio" checked>
+                                <label class="form-check-label" for="auto-play-audio">
+                                    Auto-play DJ audio responses
+                                </label>
+                            </div>
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="voice-recognition-enabled" checked>
+                                <label class="form-check-label" for="voice-recognition-enabled">
+                                    Enable voice recognition
+                                </label>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="response-length" class="form-label">DJ Response Length</label>
+                                <select class="form-select" id="response-length">
+                                    <option value="short">Short</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="long">Long</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Data & Privacy</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="save-interaction-history" checked>
+                                <label class="form-check-label" for="save-interaction-history">
+                                    Save interaction history
+                                </label>
+                            </div>
+                            
+                            <button id="clear-data-btn" class="btn btn-outline-danger">
+                                <i class="fas fa-trash me-2"></i> Clear All Local Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import Modal -->
+        <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-dark text-light">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="importModalLabel">Import Settings</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="import-file" class="form-label">Select Settings File</label>
+                            <input class="form-control" type="file" id="import-file" accept=".json">
+                        </div>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i> Importing settings will overwrite any existing settings with the same names.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="confirm-import-btn">Import</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clear Data Confirmation Modal -->
+        <div class="modal fade" id="clearDataModal" tabindex="-1" aria-labelledby="clearDataModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-dark text-light">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="clearDataModalLabel">Clear All Data</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i> 
+                            <strong>Warning:</strong> This will delete all your saved API keys, DJ profiles, and preferences. This action cannot be undone.
+                        </div>
+                        <p>Are you sure you want to proceed?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="confirm-clear-data-btn">
+                            <i class="fas fa-trash me-2"></i> Clear All Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-5 mb-3 text-center text-muted">
+            <p>AI DJ Settings &copy; 2025</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/settings.js"></script>
+</body>
+</html>

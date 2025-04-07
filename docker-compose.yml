@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    restart: unless-stopped
+    ports:
+      - "4533:4533"
+    environment:
+      - ND_SCANSCHEDULE=1h
+      - ND_LOGLEVEL=info
+      - ND_BASEURL=/music
+    volumes:
+      - ./data/navidrome:/data
+      - /path/to/your/music:/music:ro  # Change this to your music library path
+
+  ai-dj:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: ai-dj
+    restart: unless-stopped
+    ports:
+      - "${PORT:-5000}:5000"
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env
+    environment:
+      - HOST=0.0.0.0
+      - PORT=${PORT:-5000}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Optional database service for larger deployments
+  # Uncomment this section if you want to use a separate database container
+  # db:
+  #   image: postgres:13-alpine
+  #   container_name: ai-dj-db
+  #   restart: unless-stopped
+  #   environment:
+  #     - POSTGRES_USER=aidj
+  #     - POSTGRES_PASSWORD=aidj_password
+  #     - POSTGRES_DB=aidj
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+
+# Uncomment if using the postgres database
+# volumes:
+#   postgres_data:

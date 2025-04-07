@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI DJ Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .admin-container {
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .card {
+            background-color: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #3a3a3a;
+            border-bottom: 1px solid #4a4a4a;
+        }
+        .form-control, .form-select {
+            background-color: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            color: #ffffff;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: #2a2a2a;
+            color: #ffffff;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body class="bg-dark text-light">
+    <div class="container">
+        <header class="d-flex justify-content-between align-items-center py-3 mb-4 border-bottom border-secondary">
+            <h1><i class="fas fa-robot me-2"></i> AI DJ Admin</h1>
+            <a href="/" class="btn btn-outline-light">
+                <i class="fas fa-home me-2"></i> Back to Main
+            </a>
+        </header>
+
+        <div id="alert-container"></div>
+
+        <div class="row">
+            <!-- Moderation Settings -->
+            <div class="col-md-6">
+                <div class="admin-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-sliders-h me-2"></i> Moderation Settings</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="moderation-settings-form">
+                                <div class="mb-3">
+                                    <label for="warning-threshold" class="form-label">Warning Threshold</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="warning-threshold" min="1" max="10">
+                                        <span class="input-group-text">warnings before muting</span>
+                                    </div>
+                                    <div class="form-text text-light">Number of warnings before a user is muted</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="mute-duration" class="form-label">Mute Duration</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="mute-duration" min="10" max="3600">
+                                        <span class="input-group-text">seconds</span>
+                                    </div>
+                                    <div class="form-text text-light">How long a user is muted after receiving warnings</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="mute-threshold" class="form-label">Mute Threshold</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="mute-threshold" min="1" max="10">
+                                        <span class="input-group-text">mutes before suspension</span>
+                                    </div>
+                                    <div class="form-text text-light">Number of mutes before a user is suspended</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="suspension-duration" class="form-label">Suspension Duration</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="suspension-duration" min="60" max="86400">
+                                        <span class="input-group-text">seconds</span>
+                                    </div>
+                                    <div class="form-text text-light">How long a user is suspended (1 hour = 3600 seconds)</div>
+                                </div>
+                                
+                                <button type="button" id="save-settings-btn" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i> Save Settings
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User Management -->
+            <div class="col-md-6">
+                <div class="admin-container">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h3><i class="fas fa-users me-2"></i> User Management</h3>
+                            <button id="refresh-users-btn" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-sync-alt me-2"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="user-list" class="table-responsive">
+                                <!-- User list will be loaded here -->
+                                <div class="text-center">
+                                    <i class="fas fa-spinner fa-spin me-2"></i> Loading user data...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Interactions -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="admin-container">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h3><i class="fas fa-comments me-2"></i> Recent Interactions</h3>
+                            <button id="refresh-interactions-btn" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-sync-alt me-2"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="interactions-list" class="table-responsive">
+                                <!-- Interactions will be loaded here -->
+                                <div class="text-center">
+                                    <i class="fas fa-spinner fa-spin me-2"></i> Loading interactions...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="mt-5 mb-3 text-center text-muted">
+            <p>AI DJ Admin Panel &copy; 2023</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/admin.js"></script>
+</body>
+</html>
