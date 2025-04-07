@@ -61,7 +61,7 @@ An AI-powered DJ system that creates a personalized radio experience with automa
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/ai-dj.git
+   git clone https://github.com/curlyphries/ai-dj.git
    cd ai-dj
    ```
 
@@ -104,7 +104,7 @@ An AI-powered DJ system that creates a personalized radio experience with automa
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/ai-dj.git
+   git clone https://github.com/curlyphries/ai-dj.git
    cd ai-dj
    ```
 
@@ -307,7 +307,7 @@ Description=AI DJ Service
 After=network.target
 
 [Service]
-User=yourusername
+User=curlyphries
 WorkingDirectory=/path/to/ai-dj
 ExecStart=/path/to/ai-dj/venv/bin/python server/app.py
 Restart=always
@@ -430,6 +430,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 If you encounter issues not covered here:
 
-1. Check the [Issues](https://github.com/yourusername/ai-dj/issues) page for similar problems
+1. Check the [Issues](https://github.com/curlyphries/ai-dj/issues) page for similar problems
 2. Create a new issue with details about your problem
 3. Include relevant logs and system information
