@@ -6,8 +6,14 @@ from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 import requests
-
-# Import custom modules
+from utils.error_handler import (
+    api_error_handler, 
+    APIKeyError, 
+    MusicServiceError, 
+    FileSystemError,
+    validate_api_key,
+    log_error
+)
 from utils.config import Config
 from utils.navidrome import NavidromeClient
 from integrations.openai_client import OpenAIClient
@@ -47,28 +53,57 @@ app.register_blueprint(settings, url_prefix='/api')
 # Initialize configuration
 config = Config()
 
+# Global error handlers
+@app.errorhandler(404)
+def not_found_error(error):
+    return jsonify({
+        "error": {
+            "code": "NOT_FOUND",
+            "message": "The requested resource was not found"
+        }
+    }), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({
+        "error": {
+            "code": "INTERNAL_SERVER_ERROR",
+            "message": "An unexpected error occurred"
+        }
+    }), 500
+
 # Initialize clients
 try:
     # Initialize OpenAI client
     openai_api_key = os.getenv('OPENAI_API_KEY')
+    validate_api_key(openai_api_key, 'OpenAI')
     openai_client = OpenAIClient(api_key=openai_api_key)
     
     # Initialize ElevenLabs client
-    elevenlabs_client = ElevenLabsClient()
+    elevenlabs_api_key = os.getenv('ELEVENLABS_API_KEY')
+    validate_api_key(elevenlabs_api_key, 'ElevenLabs')
+    elevenlabs_client = ElevenLabsClient(api_key=elevenlabs_api_key)
     
-    # Initialize Navidrome client
+    # Initialize Navidrome client with validation
     navidrome_url = os.getenv('NAVIDROME_URL')
     navidrome_username = os.getenv('NAVIDROME_USERNAME')
     navidrome_password = os.getenv('NAVIDROME_PASSWORD')
+    
+    if not all([navidrome_url, navidrome_username, navidrome_password]):
+        raise MusicServiceError("Missing Navidrome credentials", "Navidrome")
+    
     navidrome_client = NavidromeClient(navidrome_url, navidrome_username, navidrome_password)
     
     # Initialize Last.fm client
     lastfm_api_key = os.getenv('LASTFM_API_KEY')
+    validate_api_key(lastfm_api_key, 'LastFM')
     lastfm_client = LastFMClient(lastfm_api_key)
     
     # Initialize Spotify client
     spotify_client_id = os.getenv('SPOTIFY_CLIENT_ID')
     spotify_client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
+    validate_api_key(spotify_client_id, 'Spotify')
+    validate_api_key(spotify_client_secret, 'Spotify')
     spotify_client = SpotifyClient(spotify_client_id, spotify_client_secret)
     
     # Initialize Reddit client
@@ -79,6 +114,7 @@ try:
     
     logger.info("All clients initialized successfully")
 except Exception as e:
+    log_error(e, {"context": "client_initialization"})
     logger.error(f"Error initializing clients: {str(e)}")
 
 # Routes
@@ -110,54 +146,47 @@ def health_check():
     return jsonify({"status": "healthy", "timestamp": datetime.now().isoformat()})
 
 @app.route('/api/playlists', methods=['GET'])
+@api_error_handler
 def get_playlists():
     """Get all available playlists."""
     try:
         playlists = navidrome_client.get_playlists()
         return jsonify({"playlists": playlists})
     except Exception as e:
-        logger.error(f"Error getting playlists: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        raise MusicServiceError(f"Error getting playlists: {str(e)}", "Navidrome")
 
 @app.route('/api/create_playlist', methods=['POST'])
+@api_error_handler
 def create_playlist():
     """Create a new AI-generated playlist."""
     try:
-        data = request.json
-        mood = data.get('mood', '')
-        theme = data.get('theme', '')
-        count = data.get('count', 10)
+        data = request.get_json()
+        if not data or 'name' not in data:
+            return jsonify({"error": "Missing playlist name"}), 400
+            
+        playlist_name = data['name']
+        description = data.get('description', '')
         
-        # Get recent plays from Navidrome
-        recent_plays = navidrome_client.get_recent_plays(limit=20)
-        
-        # Generate playlist with OpenAI
-        playlist_data = openai_client.generate_playlist(
-            recent_plays=recent_plays,
-            mood=mood,
-            theme=theme,
-            count=count
+        # Generate playlist using AI
+        playlist = navidrome_client.create_playlist(
+            name=playlist_name,
+            description=description
         )
         
-        # Create playlist in Navidrome
-        playlist_id = navidrome_client.create_playlist(
-            name=playlist_data['name'],
-            songs=playlist_data['songs']
-        )
-        
-        # Save playlist metadata locally
-        playlist_path = os.path.join('playlists', f"{playlist_id}.json")
-        with open(playlist_path, 'w') as f:
-            json.dump(playlist_data, f)
+        # Save playlist to file system
+        playlist_path = os.path.join('playlists', f"{playlist_name}.json")
+        try:
+            with open(playlist_path, 'w') as f:
+                json.dump(playlist, f)
+        except Exception as e:
+            raise FileSystemError(f"Error saving playlist: {str(e)}", "WRITE")
         
         return jsonify({
             "success": True,
-            "playlist_id": playlist_id,
-            "playlist_name": playlist_data['name']
+            "playlist": playlist
         })
     except Exception as e:
-        logger.error(f"Error creating playlist: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        raise MusicServiceError(f"Error creating playlist: {str(e)}", "Navidrome")
 
 @app.route('/api/speak', methods=['POST'])
 def speak_text():
@@ -285,27 +314,24 @@ def play_song(song_id):
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/now_playing', methods=['GET'])
+@api_error_handler
 def get_now_playing():
     """Get information about the currently playing song."""
     try:
-        # This would typically get the now playing info from Navidrome
-        # For now, we'll return a placeholder
         now_playing = None
-        
         try:
             with open(os.path.join('logs', 'now_playing.json'), 'r') as f:
                 now_playing_data = json.load(f)
                 if now_playing_data and len(now_playing_data) > 0:
                     now_playing = now_playing_data[0]
-        except:
-            pass
+        except Exception as e:
+            raise FileSystemError(f"Error reading now playing data: {str(e)}", "READ")
         
         return jsonify({
             "playing": now_playing
         })
     except Exception as e:
-        logger.error(f"Error getting now playing: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        raise MusicServiceError(f"Error getting now playing: {str(e)}", "Navidrome")
 
 @app.route('/api/system_status', methods=['GET'])
 def get_system_status():
