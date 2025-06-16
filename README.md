@@ -84,7 +84,7 @@ These scripts install the required Python packages, launch a Navidrome container
 
 ### Prerequisites
 
-- Python 3.8 or higher
+ - Python 3.12 or higher
 - Node.js 14 or higher (for development)
 - Docker (optional, for containerized deployment)
 - API keys for OpenAI and ElevenLabs (required)
