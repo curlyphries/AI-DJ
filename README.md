@@ -39,11 +39,28 @@ An AI-powered DJ system that creates a personalized radio experience with automa
 - **Special Events**: Recognizes holidays and special occasions
 - **Voice Customization**: Multiple voice options for the DJ personality
 - **DJ Interaction**: Chat with the DJ to request music trivia, song facts, specific songs, or playlists
+- **Listening Stats**: The DJ remembers your account and can mention your most played tracks or fun facts about the artists you enjoy
 - **Voice Recognition**: Speak your requests directly to the DJ
 - **User Management**: System to moderate user interactions, including warnings, temporary muting, and account suspension for inappropriate content
 - **Settings Management**: Secure local storage for API keys and customization options
 - **DJ Profiles**: Create and manage multiple DJ personalities with different voices and styles
 - **Cross-Platform**: Works on Windows, Linux, Mac, Android, and iOS devices
+
+## Quick Start
+
+Automated setup scripts are provided for convenience.
+
+```bash
+# On Linux or macOS
+./scripts/install.sh
+
+# On Windows (PowerShell)
+./scripts/install.ps1
+```
+
+These scripts install dependencies, run a Navidrome music server (via Docker) and attempt to install the Ollama runtime. After they finish, update your `.env` file with API keys and run `python start.py`.
+
+---
 
 ## Installation
 
@@ -241,6 +258,10 @@ Choose from a variety of voices provided by ElevenLabs:
 2. When creating a DJ profile, select from the available voices
 3. Listen to voice previews before making your selection
 
+### Music Library
+
+When running the install script you'll be asked to choose a folder that contains your music files. This path is mounted into the Navidrome container so that the web interface and AI DJ can scan your collection. You can share a common folder for all users or keep a private directory for your own account by specifying a different path.
+
 ### Moderation Settings
 
 Adjust moderation settings by modifying the `moderation_rules` dictionary in `server/routes/dj_interaction.py`:
@@ -374,6 +395,10 @@ user_status
 - last_mute_time (TIMESTAMP)
 - suspension_end_time (TIMESTAMP)
 ```
+
+## Privacy
+
+All data is stored locally on your machine. API keys, DJ profiles and user preferences never leave your device unless you explicitly back them up or share them. Review your `.env` and database files regularly and delete them if you no longer wish to keep this information.
 
 ## Future Plans
 
