@@ -46,6 +46,19 @@ An AI-powered DJ system that creates a personalized radio experience with automa
 - **DJ Profiles**: Create and manage multiple DJ personalities with different voices and styles
 - **Cross-Platform**: Works on Windows, Linux, Mac, Android, and iOS devices
 
+## Understanding the Components
+
+Before you start, here is a quick overview of the services the project uses:
+
+- **OpenAI** – provides the language model that generates the DJ's responses.
+- **ElevenLabs** – turns those responses into natural sounding speech.
+- **Navidrome** – indexes your local music collection so tracks can be played.
+- **Ollama** – optional runtime for running local language models.
+- **Docker** – runs Navidrome and can also run the app in containers.
+
+Configuration for these services is stored in the `.env` file.
+
+
 ## Quick Start
 
 Automated setup scripts are provided for convenience.
@@ -58,7 +71,7 @@ Automated setup scripts are provided for convenience.
 ./scripts/install.ps1
 ```
 
-These scripts install dependencies, run a Navidrome music server (via Docker) and attempt to install the Ollama runtime. After they finish, update your `.env` file with API keys and run `python start.py`.
+These scripts install the required Python packages, launch a Navidrome container so your local music is available, and try to install the optional Ollama runtime. Once complete, copy `.env.example` to `.env`, fill in your API keys, then run `python start.py` to start the DJ.
 
 ---
 
@@ -82,7 +95,7 @@ These scripts install dependencies, run a Navidrome music server (via Docker) an
    cd ai-dj
    ```
 
-2. Create a virtual environment and activate it:
+2. Create a virtual environment and activate it (this keeps dependencies isolated):
    ```bash
    # On Windows
    python -m venv venv
@@ -103,14 +116,14 @@ These scripts install dependencies, run a Navidrome music server (via Docker) an
    cp .env.example .env
    ```
 
-5. Edit the `.env` file with your API keys and configuration settings.
+5. Edit the `.env` file with your API keys and configuration settings. This file is ignored by Git and tells the app how to connect to each service.
 
-6. Initialize the database:
+6. Initialize the database (creates the SQLite files used for user settings):
    ```bash
    python server/init_db.py
    ```
 
-7. Start the application:
+7. Start the application (launches the local web interface):
    ```bash
    python server/app.py
    ```
@@ -130,9 +143,9 @@ These scripts install dependencies, run a Navidrome music server (via Docker) an
    cp .env.example .env
    ```
 
-3. Edit the `.env` file with your API keys and configuration settings.
+3. Edit the `.env` file with your API keys and configuration settings (same as the local setup).
 
-4. Build and start the Docker containers:
+4. Build and start the Docker containers (this runs Navidrome and the AI DJ together):
    ```bash
    docker-compose up -d
    ```
@@ -142,6 +155,7 @@ These scripts install dependencies, run a Navidrome music server (via Docker) an
 ### API Keys
 
 The following API keys are required or optional for full functionality:
+These services enable features like AI-generated speech and music recommendations.
 
 - **OpenAI API Key** (Required): For generating DJ responses
   - Sign up at [OpenAI](https://platform.openai.com/signup)
