@@ -22,7 +22,7 @@ class ElevenLabsClient:
         if not self.api_key:
             logger.warning("ElevenLabs API key not found. Text-to-speech functionality will be limited.")
     
-    def text_to_speech(self, text, voice_id=None):
+    def text_to_speech(self, text, voice_id=None, speed=1.0):
         """Convert text to speech using ElevenLabs API.
         
         Args:
@@ -52,7 +52,8 @@ class ElevenLabsClient:
             'model_id': 'eleven_monolingual_v1',
             'voice_settings': {
                 'stability': 0.5,
-                'similarity_boost': 0.75
+                'similarity_boost': 0.75,
+                'speed': speed
             }
         }
         
