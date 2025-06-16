@@ -61,9 +61,14 @@ Configuration for these services is stored in the `.env` file.
 
 ## Quick Start
 
-Automated setup scripts are provided for convenience.
+Automated setup scripts are provided for convenience. Clone the repository and
+run the script from the project directory.
 
 ```bash
+# Get the code
+git clone https://github.com/curlyphries/ai-dj.git
+cd ai-dj
+
 # On Linux or macOS
 ./scripts/install.sh
 
