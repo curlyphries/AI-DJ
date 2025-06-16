@@ -44,22 +44,25 @@ def process_dj_request(user_request, context=None):
     if context.get('dj_profile'):
         dj_profile = get_dj_profile(context.get('dj_profile'))
     
+    # Get tone setting if provided
+    tone = context.get('tone')
+
     # Categorize the request
     request_type = categorize_request(user_request)
     
     # Process based on request type
     if request_type == 'trivia':
-        return generate_music_trivia(dj_profile)
+        return generate_music_trivia(dj_profile, tone)
     elif request_type == 'song_info':
         now_playing = context.get('now_playing', {})
-        return generate_song_info(now_playing, dj_profile)
+        return generate_song_info(now_playing, dj_profile, tone)
     elif request_type == 'play_song':
         return handle_play_song_request(user_request, dj_profile)
     elif request_type == 'create_playlist':
         return handle_create_playlist_request(user_request, dj_profile)
     else:
         # General conversation
-        return handle_general_conversation(user_request, context, dj_profile)
+        return handle_general_conversation(user_request, context, dj_profile, tone)
 
 def categorize_request(request_text):
     """Categorize the type of request from the user."""
@@ -77,7 +80,7 @@ def categorize_request(request_text):
     else:
         return 'generic'
 
-def generate_music_trivia(dj_profile=None):
+def generate_music_trivia(dj_profile=None, tone=None):
     """Generate a random music trivia fact."""
     try:
         # Load trivia prompt
@@ -89,6 +92,9 @@ def generate_music_trivia(dj_profile=None):
             system_prompt = f"{dj_profile.get('personality')}\n\n{trivia_prompt['system']}"
         else:
             system_prompt = trivia_prompt['system']
+
+        if tone and tone != 'default':
+            system_prompt = f"{system_prompt}\nRespond in a {tone} style."
         
         # Generate trivia using OpenAI
         response = openai_client.client.chat.completions.create(
@@ -116,7 +122,7 @@ def generate_music_trivia(dj_profile=None):
             "actions": []
         }
 
-def generate_song_info(now_playing, dj_profile=None):
+def generate_song_info(now_playing, dj_profile=None, tone=None):
     """Generate interesting information about the current song."""
     try:
         # Check if now_playing info is available
@@ -144,6 +150,9 @@ def generate_song_info(now_playing, dj_profile=None):
             system_prompt = f"{dj_profile.get('personality')}\n\n{song_info_prompt['system']}"
         else:
             system_prompt = song_info_prompt['system']
+
+        if tone and tone != 'default':
+            system_prompt = f"{system_prompt}\nRespond in a {tone} style."
         
         # Generate song info using OpenAI
         response = openai_client.client.chat.completions.create(
@@ -171,7 +180,7 @@ def generate_song_info(now_playing, dj_profile=None):
             "actions": []
         }
 
-def handle_general_conversation(user_request, context, dj_profile=None):
+def handle_general_conversation(user_request, context, dj_profile=None, tone=None):
     """Handle general conversation with the DJ."""
     try:
         # Load chat prompt
@@ -186,6 +195,9 @@ def handle_general_conversation(user_request, context, dj_profile=None):
             system_prompt = f"{dj_profile.get('personality')}\n\n{chat_prompt['system']}"
         else:
             system_prompt = chat_prompt['system']
+
+        if tone and tone != 'default':
+            system_prompt = f"{system_prompt}\nRespond in a {tone} style."
         
         # Generate chat response using OpenAI
         messages = [
@@ -310,6 +322,12 @@ def handle_dj_request():
         user_request = data.get('request', '')
         context = data.get('context', {})
         user_id = data.get('user_id', 'default_user')
+        tone = data.get('tone', 'default')
+        voice_speed = data.get('voice_speed', 1.0)
+
+        # Pass tone and speed in context
+        context['tone'] = tone
+        context['voice_speed'] = voice_speed
         
         logger.info(f"Received DJ request from {user_id}: {user_request}")
         
@@ -342,10 +360,12 @@ def handle_dj_request():
         if response_data.get('generate_audio', True):
             # Get voice ID from response data or use default
             voice_id = response_data.get('voice_id')
-            
+            voice_speed = context.get('voice_speed', 1.0)
+
             audio_data = elevenlabs_client.text_to_speech(
-                response_data['response'], 
-                voice_id=voice_id
+                response_data['response'],
+                voice_id=voice_id,
+                speed=voice_speed
             )
             
             # Save audio file

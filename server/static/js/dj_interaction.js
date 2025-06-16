@@ -458,6 +458,8 @@ function processRequestQueue() {
         body: JSON.stringify({
             request: request,
             user_id: userId,
+            tone: localStorage.getItem('ai_dj_response_tone') || 'default',
+            voice_speed: parseFloat(localStorage.getItem('ai_dj_voice_speed') || '1'),
             context: {
                 now_playing: getCurrentSongInfo(),
                 dj_profile: activeDjProfile ? activeDjProfile.id : null

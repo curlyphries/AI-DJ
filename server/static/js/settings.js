@@ -659,6 +659,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Response length
         const responseLength = localStorage.getItem('ai_dj_response_length') || 'medium';
         document.getElementById('response-length').value = responseLength;
+
+        // Response tone
+        const responseTone = localStorage.getItem('ai_dj_response_tone') || 'default';
+        document.getElementById('response-tone').value = responseTone;
+
+        // Voice speed
+        const voiceSpeed = localStorage.getItem('ai_dj_voice_speed') || '1';
+        document.getElementById('voice-speed-pref').value = voiceSpeed;
         
         // Save interaction history
         const saveHistory = localStorage.getItem('ai_dj_save_history') !== 'false';
@@ -676,6 +684,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('response-length').addEventListener('change', function() {
         localStorage.setItem('ai_dj_response_length', this.value);
+    });
+
+    document.getElementById('response-tone').addEventListener('change', function() {
+        localStorage.setItem('ai_dj_response_tone', this.value);
+    });
+
+    document.getElementById('voice-speed-pref').addEventListener('input', function() {
+        localStorage.setItem('ai_dj_voice_speed', this.value);
     });
     
     document.getElementById('save-interaction-history').addEventListener('change', function() {
