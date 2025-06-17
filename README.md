@@ -50,10 +50,10 @@ An AI-powered DJ system that creates a personalized radio experience with automa
 
 Before you start, here is a quick overview of the services the project uses:
 
-- **OpenAI** – provides the hosted language model that generates the DJ's responses.
+- **OpenAI** – hosted language model service that generates the DJ's responses.
 - **ElevenLabs** – turns those responses into natural sounding speech.
 - **Navidrome** – indexes your local music collection so tracks can be played.
-- **Ollama** – runtime for running local language models.
+- **Ollama** – local runtime for generating DJ responses with local models.
 - **Docker** – runs Navidrome and can also run the app in containers.
 
 Configuration for these services is stored in the `.env` file.
