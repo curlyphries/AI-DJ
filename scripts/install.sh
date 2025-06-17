@@ -39,8 +39,8 @@ if ! command_exists python3; then
     exit 1
 fi
 
-# Install dependencies
-python3 -m pip install --user -r requirements.txt
+# Install dependencies (assumes you are running inside a virtual environment)
+python3 -m pip install -r requirements.txt
 
 # Pull and run Navidrome if Docker is available and container isn't already present
 if command_exists docker; then
