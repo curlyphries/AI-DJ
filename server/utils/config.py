@@ -14,9 +14,12 @@ class Config:
         self.navidrome_username = os.getenv('NAVIDROME_USERNAME', '')
         self.navidrome_password = os.getenv('NAVIDROME_PASSWORD', '')
         
-        # OpenAI configuration
+        # Language model configuration
+        self.llm_provider = os.getenv('LLM_PROVIDER', 'openai').lower()
         self.openai_api_key = os.getenv('OPENAI_API_KEY', '')
         self.openai_model = os.getenv('OPENAI_MODEL', 'gpt-4')
+        self.ollama_base_url = os.getenv('OLLAMA_BASE_URL', 'http://localhost:11434')
+        self.ollama_model = os.getenv('OLLAMA_MODEL', '')
         
         # ElevenLabs configuration
         self.elevenlabs_api_key = os.getenv('ELEVENLABS_API_KEY', '')
@@ -43,9 +46,15 @@ class Config:
         """Validate that all required configuration is present."""
         missing_vars = []
         
-        # Check required variables
-        if not self.openai_api_key:
+        # Ensure at least one language model is configured
+        if not self.openai_api_key and not self.ollama_model:
+            missing_vars.append('OPENAI_API_KEY or OLLAMA_MODEL')
+
+        if self.llm_provider == 'openai' and not self.openai_api_key:
             missing_vars.append('OPENAI_API_KEY')
+        if self.llm_provider == 'ollama' and not self.ollama_model:
+            missing_vars.append('OLLAMA_MODEL')
+
         if not self.elevenlabs_api_key:
             missing_vars.append('ELEVENLABS_API_KEY')
         if not self.navidrome_username or not self.navidrome_password:

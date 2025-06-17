@@ -16,7 +16,7 @@ from utils.error_handler import (
 )
 from utils.config import Config
 from utils.navidrome import NavidromeClient
-from integrations.openai_client import OpenAIClient
+from integrations.llm_client import LLMClient
 from integrations.elevenlabs_client import ElevenLabsClient
 from integrations.lastfm_client import LastFMClient
 from integrations.spotify_client import SpotifyClient
@@ -74,10 +74,18 @@ def internal_error(error):
 
 # Initialize clients
 try:
-    # Initialize OpenAI client
-    openai_api_key = os.getenv('OPENAI_API_KEY')
-    validate_api_key(openai_api_key, 'OpenAI')
-    openai_client = OpenAIClient(api_key=openai_api_key)
+    # Determine language model provider
+    llm_provider = os.getenv('LLM_PROVIDER', 'openai').lower()
+
+    if llm_provider == 'ollama':
+        ollama_model = os.getenv('OLLAMA_MODEL')
+        if not ollama_model:
+            raise MusicServiceError('OLLAMA_MODEL not specified', 'Ollama')
+        openai_client = LLMClient(provider='ollama', model=ollama_model)
+    else:
+        openai_api_key = os.getenv('OPENAI_API_KEY')
+        validate_api_key(openai_api_key, 'OpenAI')
+        openai_client = LLMClient(provider='openai', api_key=openai_api_key)
     
     # Initialize ElevenLabs client
     elevenlabs_api_key = os.getenv('ELEVENLABS_API_KEY')

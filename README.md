@@ -50,10 +50,10 @@ An AI-powered DJ system that creates a personalized radio experience with automa
 
 Before you start, here is a quick overview of the services the project uses:
 
-- **OpenAI** – provides the language model that generates the DJ's responses.
+- **OpenAI** – provides the hosted language model that generates the DJ's responses.
 - **ElevenLabs** – turns those responses into natural sounding speech.
 - **Navidrome** – indexes your local music collection so tracks can be played.
-- **Ollama** – optional runtime for running local language models.
+- **Ollama** – runtime for running local language models.
 - **Docker** – runs Navidrome and can also run the app in containers.
 
 Configuration for these services is stored in the `.env` file.
@@ -76,7 +76,7 @@ cd ai-dj
 ./scripts/install.ps1
 ```
 
-These scripts install the required Python packages, launch a Navidrome container so your local music is available, and try to install the optional Ollama runtime. Once complete, copy `.env.example` to `.env`, fill in your API keys, then run `python start.py` to start the DJ.
+These scripts install the required Python packages, launch a Navidrome container so your local music is available, and attempt to install Ollama for running local models. Once complete, copy `.env.example` to `.env`, choose either OpenAI or Ollama as your language model provider, fill in the necessary keys or model name, then run `python start.py` to start the DJ.
 
 ---
 
@@ -87,7 +87,7 @@ These scripts install the required Python packages, launch a Navidrome container
  - Python 3.12 or higher
 - Node.js 14 or higher (for development)
 - Docker (optional, for containerized deployment)
-- API keys for OpenAI and ElevenLabs (required)
+- API key for OpenAI **or** a local Ollama model, and an ElevenLabs API key (required)
 - API keys for Last.fm and Spotify (optional, for enhanced music data)
 
 ### Setup Instructions
@@ -121,7 +121,7 @@ These scripts install the required Python packages, launch a Navidrome container
    cp .env.example .env
    ```
 
-5. Edit the `.env` file with your API keys and configuration settings. This file is ignored by Git and tells the app how to connect to each service.
+5. Edit the `.env` file with your API keys and configuration settings. Set `LLM_PROVIDER` to either `openai` or `ollama` and provide the corresponding credentials. This file is ignored by Git and tells the app how to connect to each service.
 
 6. Initialize the database (creates the SQLite files used for user settings):
    ```bash
@@ -148,7 +148,7 @@ These scripts install the required Python packages, launch a Navidrome container
    cp .env.example .env
    ```
 
-3. Edit the `.env` file with your API keys and configuration settings (same as the local setup).
+3. Edit the `.env` file with your API keys and configuration settings (same as the local setup). Be sure to set `LLM_PROVIDER` to `openai` or `ollama`.
 
 4. Build and start the Docker containers (this runs Navidrome and the AI DJ together):
    ```bash
@@ -159,12 +159,12 @@ These scripts install the required Python packages, launch a Navidrome container
 
 ### API Keys
 
-The following API keys are required or optional for full functionality:
-These services enable features like AI-generated speech and music recommendations.
+The following keys or settings are required or optional for full functionality. At least one language model provider must be configured.
 
-- **OpenAI API Key** (Required): For generating DJ responses
+- **OpenAI API Key** (Required if using OpenAI): For generating DJ responses
   - Sign up at [OpenAI](https://platform.openai.com/signup)
   - Create an API key at [OpenAI API Keys](https://platform.openai.com/api-keys)
+- **Ollama Model Name** (Required if using Ollama): Name of the local model to load
 
 - **ElevenLabs API Key** (Required): For text-to-speech conversion
   - Sign up at [ElevenLabs](https://elevenlabs.io/)
