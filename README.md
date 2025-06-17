@@ -62,12 +62,16 @@ Configuration for these services is stored in the `.env` file.
 ## Quick Start
 
 Automated setup scripts are provided for convenience. Clone the repository and
-run the script from the project directory.
+create a Python virtual environment before running the install script.
 
 ```bash
 # Get the code
 git clone https://github.com/curlyphries/ai-dj.git
 cd ai-dj
+
+# Set up a virtual environment (optional but recommended)
+python3 -m venv venv
+source venv/bin/activate
 
 # On Linux or macOS
 ./scripts/install.sh
@@ -84,7 +88,7 @@ These scripts install the required Python packages, launch a Navidrome container
 
 ### Prerequisites
 
- - Python 3.12 or higher
+ - Python 3.10 or 3.11 (Python 3.12 may cause issues)
 - Node.js 14 or higher (for development)
 - Docker (optional, for containerized deployment)
 - API key for OpenAI **or** a local Ollama model, and an ElevenLabs API key (required)
