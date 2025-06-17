@@ -96,17 +96,11 @@ def generate_music_trivia(dj_profile=None, tone=None):
         if tone and tone != 'default':
             system_prompt = f"{system_prompt}\nRespond in a {tone} style."
         
-        # Generate trivia using OpenAI
-        response = openai_client.client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": trivia_prompt["user"]}
-            ],
-            max_tokens=250
-        )
-        
-        trivia_text = response.choices[0].message.content.strip()
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": trivia_prompt["user"]}
+        ]
+        trivia_text = openai_client.chat_completion(messages, max_tokens=250).strip()
         
         return {
             "response": trivia_text,
@@ -154,17 +148,11 @@ def generate_song_info(now_playing, dj_profile=None, tone=None):
         if tone and tone != 'default':
             system_prompt = f"{system_prompt}\nRespond in a {tone} style."
         
-        # Generate song info using OpenAI
-        response = openai_client.client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            max_tokens=300
-        )
-        
-        song_info_text = response.choices[0].message.content.strip()
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+        song_info_text = openai_client.chat_completion(messages, max_tokens=300).strip()
         
         return {
             "response": song_info_text,
@@ -205,13 +193,7 @@ def handle_general_conversation(user_request, context, dj_profile=None, tone=Non
             {"role": "user", "content": f"Current song: {now_playing.get('title', 'Unknown')} by {now_playing.get('artist', 'Unknown')}\n\nUser request: {user_request}"}
         ]
         
-        response = openai_client.client.chat.completions.create(
-            model="gpt-4",
-            messages=messages,
-            max_tokens=250
-        )
-        
-        chat_response = response.choices[0].message.content.strip()
+        chat_response = openai_client.chat_completion(messages, max_tokens=250).strip()
         
         return {
             "response": chat_response,
@@ -441,17 +423,11 @@ def check_music_relevance(request_text):
     # Format the prompt with the request
     user_prompt = moderation_prompt["user"].format(request=request_text)
     
-    # Check content using OpenAI
-    response = openai_client.client.chat.completions.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": moderation_prompt["system"]},
-            {"role": "user", "content": user_prompt}
-        ],
-        max_tokens=150
-    )
-    
-    result = response.choices[0].message.content.strip()
+    messages = [
+        {"role": "system", "content": moderation_prompt["system"]},
+        {"role": "user", "content": user_prompt}
+    ]
+    result = openai_client.chat_completion(messages, max_tokens=150).strip()
     
     if result.startswith("MUSIC_RELATED"):
         return True, "Music-related content"
