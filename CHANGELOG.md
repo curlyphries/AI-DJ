@@ -9,4 +9,5 @@ All notable changes to this project will be documented in this file.
 - Added LLM provider support with new `LLM_PROVIDER` setting to switch between OpenAI and Ollama.
 - Introduced `LLMClient` abstraction and updated config validation to require either an OpenAI API key or an Ollama model.
 - Updated README and environment templates with new instructions.
+- Clarified in README that OpenAI or Ollama generate the DJ's responses.
 
