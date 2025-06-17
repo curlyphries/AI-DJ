@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 - Improved install scripts to check for existing installations of Navidrome and Ollama before installing.
+- Scripts now prompt for confirmation when Navidrome or Ollama are already present, preventing port conflicts.
 - Added user friendly comments to installation scripts.
 - Added CHANGELOG file.
 - Added LLM provider support with new `LLM_PROVIDER` setting to switch between OpenAI and Ollama.
