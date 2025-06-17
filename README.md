@@ -87,7 +87,7 @@ These scripts install the required Python packages, launch a Navidrome container
  - Python 3.12 or higher
 - Node.js 14 or higher (for development)
 - Docker (optional, for containerized deployment)
-- API key for OpenAI **or** a local Ollama model, and an ElevenLabs API key (required)
+ - OpenAI API subscription and key ([OpenAI](https://platform.openai.com/)) **or** a local Ollama model, and an ElevenLabs subscription and API key ([ElevenLabs](https://elevenlabs.io/))
 - API keys for Last.fm and Spotify (optional, for enhanced music data)
 
 ### Setup Instructions

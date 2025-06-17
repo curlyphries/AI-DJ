@@ -10,4 +10,5 @@ All notable changes to this project will be documented in this file.
 - Introduced `LLMClient` abstraction and updated config validation to require either an OpenAI API key or an Ollama model.
 - Updated README and environment templates with new instructions.
 - Clarified in README that OpenAI or Ollama generate the DJ's responses.
+- Documented required subscriptions for OpenAI and ElevenLabs with links to their websites.
 
