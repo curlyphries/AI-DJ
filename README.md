@@ -1,7 +1,4 @@
 # AI DJ
-
-![AI DJ Logo](server/static/images/logo.png)
-
 An AI-powered DJ system that creates a personalized radio experience with automated announcements, music selection, and user interaction. The system uses AI to generate natural-sounding DJ commentary between songs, curate music based on themes or moods, and interact with users through text or voice commands.
 
 ## Table of Contents
@@ -50,11 +47,11 @@ An AI-powered DJ system that creates a personalized radio experience with automa
 
 Before you start, here is a quick overview of the services the project uses:
 
-- **OpenAI** – hosted language model service that generates the DJ's responses.
-- **ElevenLabs** – turns those responses into natural sounding speech.
-- **Navidrome** – indexes your local music collection so tracks can be played.
-- **Ollama** – local runtime for generating DJ responses with local models.
-- **Docker** – runs Navidrome and can also run the app in containers.
+- **OpenAI** – hosted language model service that generates the DJ's responses
+- **ElevenLabs** – turns those responses into natural sounding speech
+- **Navidrome** – indexes your local music collection so tracks can be played
+- **Ollama** – local runtime for generating DJ responses with local models
+- **Docker** – runs Navidrome and can also run the app in containers
 
 Configuration for these services is stored in the `.env` file.
 
