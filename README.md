@@ -1,5 +1,5 @@
 # AI DJ
-An AI-powered DJ system that creates a personalized radio experience with automated announcements, music selection, and user interaction. The system uses AI to generate natural-sounding DJ commentary between songs, curate music based on themes or moods, and interact with users through text or voice commands.
+An AI-powered DJ system that creates a personalized radio experience with automated announcements, music selection and user interaction. The system uses AI to generate natural-sounding DJ commentary between songs, curate music based on themes or moods and interact with users through text or voice commands.
 
 ## Table of Contents
 
