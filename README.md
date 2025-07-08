@@ -136,7 +136,7 @@ python start.py
 
 7. Start the application (launches the local web interface):
    ```bash
-   python server/app.py
+   python start.py
    ```
 
 8. Access the application at `http://localhost:5000`
@@ -196,7 +196,7 @@ The following keys or settings are required or optional for full functionality. 
 Run the start script:
 ```bash
 # If installed locally
-python server/app.py
+python start.py
 
 # If using Docker
 docker-compose up -d
