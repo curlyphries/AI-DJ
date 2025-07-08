@@ -14,4 +14,5 @@ All notable changes to this project will be documented in this file.
 - Updated `scripts/install.sh` to install requirements without the `--user` flag.
 - Documented virtual environment setup in the Quick Start guide.
 - Changed prerequisite to recommend Python 3.10 or 3.11.
+- Added dependency checks for `docker` and `curl` in `scripts/install.sh` with logging to `logs/install.log`.
 
