@@ -1,5 +1,10 @@
 # AI DJ Troubleshooting Guide
 
+## Initial Setup
+
+1. Copy `.env.example` to `.env` and fill in your API keys.
+2. Run `python server/init_db.py` to create the local database (use `--test` to verify the connection first if needed).
+
 ## Common Errors and Solutions
 
 ### API Key Errors (401)

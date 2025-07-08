@@ -68,9 +68,6 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Initialize database when module is loaded
-init_db()
-
 # Helper functions
 def get_available_voices():
     """Get list of available voices from ElevenLabs."""
