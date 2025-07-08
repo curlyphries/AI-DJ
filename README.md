@@ -77,7 +77,12 @@ source venv/bin/activate
 ./scripts/install.ps1
 ```
 
-These scripts install the required Python packages, launch a Navidrome container so your local music is available, and attempt to install Ollama for running local models. Once complete, copy `.env.example` to `.env`, choose either OpenAI or Ollama as your language model provider, fill in the necessary keys or model name, then run `python start.py` to start the DJ.
+These scripts install the required Python packages, launch a Navidrome container so your local music is available, and attempt to install Ollama for running local models. Once complete, copy `.env.example` to `.env`, choose either OpenAI or Ollama as your language model provider, fill in the necessary keys or model name, then **initialize the database** and start the DJ:
+
+```bash
+python server/init_db.py
+python start.py
+```
 
 ---
 
@@ -131,7 +136,7 @@ These scripts install the required Python packages, launch a Navidrome container
 
 7. Start the application (launches the local web interface):
    ```bash
-   python server/app.py
+   python start.py
    ```
 
 8. Access the application at `http://localhost:5000`
@@ -191,7 +196,7 @@ The following keys or settings are required or optional for full functionality. 
 Run the start script:
 ```bash
 # If installed locally
-python server/app.py
+python start.py
 
 # If using Docker
 docker-compose up -d

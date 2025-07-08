@@ -14,4 +14,9 @@ All notable changes to this project will be documented in this file.
 - Updated `scripts/install.sh` to install requirements without the `--user` flag.
 - Documented virtual environment setup in the Quick Start guide.
 - Changed prerequisite to recommend Python 3.10 or 3.11.
+- Added `server/init_db.py` script for initializing or testing the database.
+- Updated README and troubleshooting guide to run `python server/init_db.py` after configuring `.env`.
+- Improved `server/init_db.py` to load environment variables and support connection testing.
+- Removed automatic database initialization from `server/routes/settings.py`.
+- Updated README to consistently start the app with `python start.py`.
 
